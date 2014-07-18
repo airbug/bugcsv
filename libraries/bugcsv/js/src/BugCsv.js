@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014 airbug inc. http://airbug.com
  *
- * bugcore may be freely distributed under the MIT license.
+ * bugcsv may be freely distributed under the MIT license.
  */
 
 
@@ -28,11 +28,11 @@ require('bugpack').context("*", function(bugpack) {
     // BugPack
     //-------------------------------------------------------------------------------
 
-    var Class               = bugpack.require('Class');
-    var Obj                 = bugpack.require('Obj');
-    var Proxy               = bugpack.require('Proxy');
-    var CsvBuilder          = bugpack.require('bugcsv.CsvBuilder');
-    var CsvParser           = bugpack.require('bugcsv.CsvParser');
+    var Class       = bugpack.require('Class');
+    var Obj         = bugpack.require('Obj');
+    var Proxy       = bugpack.require('Proxy');
+    var CsvBuilder  = bugpack.require('bugcsv.CsvBuilder');
+    var CsvParser   = bugpack.require('bugcsv.CsvParser');
 
 
     //-------------------------------------------------------------------------------

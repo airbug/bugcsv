@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014 airbug inc. http://airbug.com
  *
- * bugcore may be freely distributed under the MIT license.
+ * bugcsv may be freely distributed under the MIT license.
  */
 
 
@@ -79,7 +79,7 @@ buildProperties({
         },
         sourcePaths: [
             "../bugcore/projects/bugcore/js/src",
-            "./projects/bugcsv/js/src"
+            "./libraries/bugcsv/js/src"
         ],
         scriptPaths: [
             "./projects/bugcsv-node/js/scripts"
@@ -109,7 +109,7 @@ buildProperties({
             ],
             testPaths: [
                 "../bugcore/projects/bugcore/js/test",
-                "./projects/bugcsv/js/test"
+                "./libraries/bugcsv/js/test"
             ]
         }
     },
@@ -119,7 +119,7 @@ buildProperties({
         version: version,
         sourcePaths: [
             "../bugcore/projects/bugcore/js/src",
-            "./projects/bugcsv/js/src"
+            "./libraries/bugcsv/js/src"
         ],
         outputFile: "{{distPath}}/{{web.name}}-{{web.version}}.js",
         outputMinFile: "{{distPath}}/{{web.name}}-{{web.version}}.min.js"
@@ -256,7 +256,7 @@ buildTarget('local').buildFlow(
                             sources.push(bugPackRegistryEntry.getResolvedPath().getAbsolutePath());
                         });
                         task.updateProperties({
-                            sources: sources.concat("./projects/bugcore-web/js/scripts/bugcore-web.js")
+                            sources: sources.concat("./projects/bugcsv-web/js/scripts/bugcsv-web.js")
                         });
                     },
                     properties: {
@@ -453,7 +453,7 @@ buildTarget('prod').buildFlow(
                             sources.push(bugPackRegistryEntry.getResolvedPath().getAbsolutePath());
                         });
                         task.updateProperties({
-                            sources: sources.concat("./projects/bugcore-web/js/scripts/bugcore-web.js")
+                            sources: sources.concat("./projects/bugcsv-web/js/scripts/bugcsv-web.js")
                         });
                     },
                     properties: {
