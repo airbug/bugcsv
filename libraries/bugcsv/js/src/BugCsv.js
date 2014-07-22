@@ -9,13 +9,15 @@
 // Annotations
 //-------------------------------------------------------------------------------
 
-//@Export('BugCsv')
+//@Export('bugcsv.BugCsv')
 
 //@Require('Class')
 //@Require('Obj')
 //@Require('Proxy')
-//@Require('bugcsv.CsvBuilder')
+//@Require('bugcsv.CsvArrayBuilder')
 //@Require('bugcsv.CsvParser')
+//@Require('bugcsv.CsvStringBuilder')
+//@Require('bugcsv.CsvStringifier')
 
 
 //-------------------------------------------------------------------------------
@@ -28,11 +30,13 @@ require('bugpack').context("*", function(bugpack) {
     // BugPack
     //-------------------------------------------------------------------------------
 
-    var Class       = bugpack.require('Class');
-    var Obj         = bugpack.require('Obj');
-    var Proxy       = bugpack.require('Proxy');
-    var CsvBuilder  = bugpack.require('bugcsv.CsvBuilder');
-    var CsvParser   = bugpack.require('bugcsv.CsvParser');
+    var Class               = bugpack.require('Class');
+    var Obj                 = bugpack.require('Obj');
+    var Proxy               = bugpack.require('Proxy');
+    var CsvArrayBuilder     = bugpack.require('bugcsv.CsvArrayBuilder');
+    var CsvParser           = bugpack.require('bugcsv.CsvParser');
+    var CsvStringBuilder    = bugpack.require('bugcsv.CsvStringBuilder');
+    var CsvStringifier      = bugpack.require('bugcsv.CsvStringifier');
 
 
     //-------------------------------------------------------------------------------
@@ -45,7 +49,7 @@ require('bugpack').context("*", function(bugpack) {
      */
     var BugCsv = Class.extend(Obj, {
 
-        _name: "BugCsv",
+        _name: "bugcsv.BugCsv",
 
 
         //-------------------------------------------------------------------------------
@@ -65,14 +69,24 @@ require('bugpack').context("*", function(bugpack) {
             //-------------------------------------------------------------------------------
 
             /**
-             * @type {function(new:CsvBuilder)}
+             * @type {function(new:CsvArrayBuilder)}
              */
-            this.CsvBuilder         = CsvBuilder;
+            this.CsvArrayBuilder    = CsvArrayBuilder;
 
             /**
              * @type {function(new:CsvParser)}
              */
             this.CsvParser          = CsvParser;
+
+            /**
+             * @type {function(new:CsvStringBuilder)}
+             */
+            this.CsvStringBuilder   = CsvStringBuilder;
+
+            /**
+             * @type {function(new:CsvStringifier)}
+             */
+            this.CsvStringifier     = CsvStringifier;
         },
 
 
@@ -85,10 +99,21 @@ require('bugpack').context("*", function(bugpack) {
          * @return {Array.<Array.<string>>}
          */
         parseSync: function(text) {
-            var builder = new CsvBuilder();
+            var builder = new CsvArrayBuilder();
             var parser  = new CsvParser(text, builder);
             parser.parse();
             return builder.getCsvArray();
+        },
+
+        /**
+         * @param {Array.<Array.<string>>} csvArray
+         * @return {string}
+         */
+        stringifySync: function(csvArray) {
+            var builder         = new CsvStringBuilder();
+            var stringifier     = new CsvStringifier(csvArray, builder);
+            stringifier.stringify();
+            return builder.getCsvString();
         }
     });
 
@@ -111,7 +136,7 @@ require('bugpack').context("*", function(bugpack) {
 
     /**
      * @static
-     * @return {BugCore}
+     * @return {BugCsv}
      */
     BugCsv.getInstance = function() {
         if (BugCsv.instance === null) {
@@ -126,7 +151,8 @@ require('bugpack').context("*", function(bugpack) {
     //-------------------------------------------------------------------------------
 
     Proxy.proxy(BugCsv, Proxy.method(BugCsv.getInstance), [
-        "parseSync"
+        "parseSync",
+        "stringifySync"
     ]);
 
 
@@ -134,5 +160,5 @@ require('bugpack').context("*", function(bugpack) {
     // Exports
     //-------------------------------------------------------------------------------
 
-    bugpack.export('BugCsv', BugCsv);
+    bugpack.export('bugcsv.BugCsv', BugCsv);
 });

@@ -9,7 +9,7 @@
 // Annotations
 //-------------------------------------------------------------------------------
 
-//@Export('bugcsv.CsvBuilder')
+//@Export('bugcsv.CsvStringifier')
 
 //@Require('Class')
 //@Require('Obj')
@@ -37,9 +37,9 @@ require('bugpack').context("*", function(bugpack) {
      * @class
      * @extends {Obj}
      */
-    var CsvBuilder = Class.extend(Obj, {
+    var CsvStringifier = Class.extend(Obj, {
 
-        _name: "CsvBuilder",
+        _name: "bugcsv.CsvStringifier",
 
 
         //-------------------------------------------------------------------------------
@@ -48,8 +48,10 @@ require('bugpack').context("*", function(bugpack) {
 
         /**
          * @constructs
+         * @param {Array.<Array.<string>>} csvArray
+         * @param {CsvStringBuilder} csvStringBuilder
          */
-        _constructor: function() {
+        _constructor: function(csvArray, csvStringBuilder) {
 
             this._super();
 
@@ -62,19 +64,13 @@ require('bugpack').context("*", function(bugpack) {
              * @private
              * @type {Array.<Array.<string>>}
              */
-            this.csvArray       = [];
+            this.csvArray           = csvArray;
 
             /**
              * @private
-             * @type {string}
+             * @type {CsvStringBuilder}
              */
-            this.currentItem    = null;
-
-            /**
-             * @private
-             * @type {Array.<string>}
-             */
-            this.currentLine    = null;
+            this.csvStringBuilder   = csvStringBuilder;
         },
 
 
@@ -83,24 +79,17 @@ require('bugpack').context("*", function(bugpack) {
         //-------------------------------------------------------------------------------
 
         /**
-         * @returns {Array.<Array.<string>>}
+         * @return {Array.<Array.<string>>}
          */
         getCsvArray: function() {
             return this.csvArray;
         },
 
         /**
-         * @return {string}
+         * @return {CsvStringBuilder}
          */
-        getCurrentItem: function() {
-            return this.currentItem;
-        },
-
-        /**
-         * @return {Array.<string>}
-         */
-        getCurrentLine: function() {
-            return this.currentLine;
+        getCsvStringBuilder: function() {
+            return this.csvStringBuilder;
         },
 
 
@@ -109,40 +98,17 @@ require('bugpack').context("*", function(bugpack) {
         //-------------------------------------------------------------------------------
 
         /**
-         * @param {string} data
-         */
-        addToItem: function(data) {
-            this.currentItem += data;
-        },
-
-        /**
          *
          */
-        completeItem: function() {
-            this.currentLine.push(this.currentItem);
-            this.currentItem = null;
-        },
-
-        /**
-         *
-         */
-        completeLine: function() {
-            this.csvArray.push(this.currentLine);
-            this.currentLine = null;
-        },
-
-        /**
-         *
-         */
-        newItem: function() {
-            this.currentItem = "";
-        },
-
-        /**
-         *
-         */
-        newLine: function() {
-            this.currentLine = [];
+        stringify: function() {
+            var _this = this;
+            this.csvArray.forEach(function(csvLineArray) {
+                csvLineArray.forEach(function(csvItem) {
+                    _this.csvStringBuilder.addToItem(csvItem);
+                    _this.csvStringBuilder.completeItem();
+                });
+                _this.csvStringBuilder.completeLine();
+            });
         }
     });
 
@@ -151,5 +117,5 @@ require('bugpack').context("*", function(bugpack) {
     // Exports
     //-------------------------------------------------------------------------------
 
-    bugpack.export('bugcsv.CsvBuilder', CsvBuilder);
+    bugpack.export('bugcsv.CsvStringifier', CsvStringifier);
 });

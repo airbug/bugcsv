@@ -39,7 +39,7 @@ require('bugpack').context("*", function(bugpack) {
      */
     var CsvParser = Class.extend(Obj, {
 
-        _name: "CsvParser",
+        _name: "bugcsv.CsvParser",
 
 
         //-------------------------------------------------------------------------------
@@ -49,9 +49,9 @@ require('bugpack').context("*", function(bugpack) {
         /**
          * @constructs
          * @param {string} text
-         * @param {CsvBuilder} csvBuilder
+         * @param {CsvArrayBuilder} csvArrayBuilder
          */
-        _constructor: function(text, csvBuilder) {
+        _constructor: function(text, csvArrayBuilder) {
 
             this._super();
 
@@ -62,27 +62,27 @@ require('bugpack').context("*", function(bugpack) {
 
             /**
              * @private
-             * @type {CsvBuilder}
+             * @type {CsvArrayBuilder}
              */
-            this.csvBuilder     = csvBuilder;
+            this.csvArrayBuilder    = csvArrayBuilder;
 
             /**
              * @private
              * @type {number}
              */
-            this.endIndex       = text.length - 1;
+            this.endIndex           = text.length - 1;
 
             /**
              * @private
              * @type {number}
              */
-            this.index          = -1;
+            this.index              = -1;
 
             /**
              * @private
              * @type {string}
              */
-            this.text           = text;
+            this.text               = text;
         },
 
 
@@ -91,10 +91,10 @@ require('bugpack').context("*", function(bugpack) {
         //-------------------------------------------------------------------------------
 
         /**
-         * @return {CsvBuilder}
+         * @return {CsvArrayBuilder}
          */
-        getCsvBuilder: function() {
-            return this.csvBuilder;
+        getCsvArrayBuilder: function() {
+            return this.csvArrayBuilder;
         },
 
         /**
@@ -120,8 +120,8 @@ require('bugpack').context("*", function(bugpack) {
          *
          */
         parse: function() {
-            this.csvBuilder.newLine();
-            this.csvBuilder.newItem();
+            this.csvArrayBuilder.newLine();
+            this.csvArrayBuilder.newItem();
             while (this.hasNextChar()) {
                 this.parseItem();
             }
@@ -156,19 +156,19 @@ require('bugpack').context("*", function(bugpack) {
             var nextChar = this.nextChar();
             //escaped quote
             if (nextChar === "\"") {
-                this.csvBuilder.addToItem(nextChar);
+                this.csvArrayBuilder.addToItem(nextChar);
                 this.parseQuotedItem();
             } else if (nextChar === "\n") {
-                this.csvBuilder.completeItem();
-                this.csvBuilder.completeLine();
+                this.csvArrayBuilder.completeItem();
+                this.csvArrayBuilder.completeLine();
                 if (this.hasNextChar()) {
-                    this.csvBuilder.newItem();
-                    this.csvBuilder.newLine();
+                    this.csvArrayBuilder.newItem();
+                    this.csvArrayBuilder.newLine();
                 }
             } else if (nextChar === ",") {
-                this.csvBuilder.completeItem();
+                this.csvArrayBuilder.completeItem();
                 if (this.hasNextChar()) {
-                    this.csvBuilder.newItem();
+                    this.csvArrayBuilder.newItem();
                 }
             }
         },
@@ -181,19 +181,19 @@ require('bugpack').context("*", function(bugpack) {
             if (nextChar === "\"") {
                 this.parseQuotedItem();
             } else if (nextChar === "\n") {
-                this.csvBuilder.completeItem();
-                this.csvBuilder.completeLine();
+                this.csvArrayBuilder.completeItem();
+                this.csvArrayBuilder.completeLine();
                 if (this.hasNextChar()) {
-                    this.csvBuilder.newItem();
-                    this.csvBuilder.newLine();
+                    this.csvArrayBuilder.newItem();
+                    this.csvArrayBuilder.newLine();
                 }
             } else if (nextChar === ",") {
-                this.csvBuilder.completeItem();
+                this.csvArrayBuilder.completeItem();
                 if (this.hasNextChar()) {
-                    this.csvBuilder.newItem();
+                    this.csvArrayBuilder.newItem();
                 }
             } else {
-                this.csvBuilder.addToItem(nextChar);
+                this.csvArrayBuilder.addToItem(nextChar);
                 this.parseNonQuotedItem();
             }
         },
@@ -205,17 +205,17 @@ require('bugpack').context("*", function(bugpack) {
             while (this.hasNextChar()) {
                 var nextChar = this.nextChar();
                 if (nextChar === "\n") {
-                    this.csvBuilder.completeItem();
-                    this.csvBuilder.completeLine();
+                    this.csvArrayBuilder.completeItem();
+                    this.csvArrayBuilder.completeLine();
                     if (this.hasNextChar()) {
-                        this.csvBuilder.newItem();
-                        this.csvBuilder.newLine();
+                        this.csvArrayBuilder.newItem();
+                        this.csvArrayBuilder.newLine();
                     }
                     break;
                 } else if (nextChar === ",") {
-                    this.csvBuilder.completeItem();
+                    this.csvArrayBuilder.completeItem();
                     if (this.hasNextChar()) {
-                        this.csvBuilder.newItem();
+                        this.csvArrayBuilder.newItem();
                     }
                     break;
                 } else if (nextChar === "\"") {
@@ -226,7 +226,7 @@ require('bugpack').context("*", function(bugpack) {
                     }
                     throw new bugcore.Exception("BadCsvFormat", {}, "Incorrectly formatted CSV file at '" + this.text.substring(fromIndex, toIndex + 1) + "'");
                 } else {
-                    this.csvBuilder.addToItem(nextChar);
+                    this.csvArrayBuilder.addToItem(nextChar);
                 }
             }
         },
@@ -241,7 +241,7 @@ require('bugpack').context("*", function(bugpack) {
                     this.parseAfterQuote();
                     break;
                 } else {
-                    this.csvBuilder.addToItem(nextChar);
+                    this.csvArrayBuilder.addToItem(nextChar);
                 }
             }
         }
