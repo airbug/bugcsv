@@ -44,7 +44,7 @@ var uglifyjs            = enableModule("uglifyjs");
 //-------------------------------------------------------------------------------
 
 var name                = "bugcsv";
-var version             = "0.0.1";
+var version             = "0.0.3";
 var dependencies        = {
     bugpack: "0.1.14"
 };

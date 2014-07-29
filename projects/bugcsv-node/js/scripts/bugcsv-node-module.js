@@ -10,8 +10,8 @@
 //-------------------------------------------------------------------------------
 
 var bugpack     = require("bugpack").loadContextSync(module);
-bugpack.loadExportSync("BugCsv");
-var BugCsv     = bugpack.require("BugCsv");
+bugpack.loadExportSync("bugcsv.BugCsv");
+var BugCsv     = bugpack.require("bugcsv.BugCsv");
 
 
 //-------------------------------------------------------------------------------

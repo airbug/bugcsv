@@ -11,6 +11,6 @@
 
 (function(window) {
     var bugpack     = require("bugpack").context();
-    var BugCsv      = bugpack.require("BugCsv");
+    var BugCsv      = bugpack.require("bugcsv.BugCsv");
     window.bugcsv   = window.bugcsv || BugCsv.getInstance();
 })(window);
