@@ -78,7 +78,7 @@ buildProperties({
             ]
         },
         sourcePaths: [
-            "../bugcore/projects/bugcore/js/src",
+            "../bugcore/libraries/bugcore/js/src",
             "./libraries/bugcsv/js/src"
         ],
         scriptPaths: [
@@ -108,7 +108,7 @@ buildProperties({
                 "../bugunit/projects/bugunit/js/scripts"
             ],
             testPaths: [
-                "../bugcore/projects/bugcore/js/test",
+                "../bugcore/libraries/bugcore/js/test",
                 "./libraries/bugcsv/js/test"
             ]
         }
@@ -118,7 +118,7 @@ buildProperties({
         name: name,
         version: version,
         sourcePaths: [
-            "../bugcore/projects/bugcore/js/src",
+            "../bugcore/libraries/bugcore/js/src",
             "./libraries/bugcsv/js/src"
         ],
         outputFile: "{{distPath}}/{{web.name}}-{{web.version}}.js",

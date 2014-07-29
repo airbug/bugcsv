@@ -12,6 +12,7 @@
 //@Export('bugcsv.CsvParser')
 
 //@Require('Class')
+//@Require('Exception')
 //@Require('Obj')
 
 
@@ -25,8 +26,9 @@ require('bugpack').context("*", function(bugpack) {
     // BugPack
     //-------------------------------------------------------------------------------
 
-    var Class   = bugpack.require('Class');
-    var Obj     = bugpack.require('Obj');
+    var Class       = bugpack.require('Class');
+    var Exception   = bugpack.require('Exception');
+    var Obj         = bugpack.require('Obj');
 
 
     //-------------------------------------------------------------------------------
@@ -125,6 +127,8 @@ require('bugpack').context("*", function(bugpack) {
             while (this.hasNextChar()) {
                 this.parseItem();
             }
+            this.csvArrayBuilder.completeItem();
+            this.csvArrayBuilder.completeLine();
         },
 
 
@@ -224,7 +228,7 @@ require('bugpack').context("*", function(bugpack) {
                     if (toIndex >= 100) {
                         fromIndex = toIndex - 100;
                     }
-                    throw new bugcore.Exception("BadCsvFormat", {}, "Incorrectly formatted CSV file at '" + this.text.substring(fromIndex, toIndex + 1) + "'");
+                    throw new Exception("BadCsvFormat", {}, "Incorrectly formatted CSV file at '" + this.text.substring(fromIndex, toIndex + 1) + "'");
                 } else {
                     this.csvArrayBuilder.addToItem(nextChar);
                 }
