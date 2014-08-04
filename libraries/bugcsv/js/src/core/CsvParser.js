@@ -127,14 +127,35 @@ require('bugpack').context("*", function(bugpack) {
             while (this.hasNextChar()) {
                 this.parseItem();
             }
-            this.csvArrayBuilder.completeItem();
-            this.csvArrayBuilder.completeLine();
+            this.completeItemAndLine();
         },
 
 
         //-------------------------------------------------------------------------------
         // Private Methods
         //-------------------------------------------------------------------------------
+
+        /**
+         * @private
+         */
+        completeItem: function() {
+            this.csvArrayBuilder.completeItem();
+            if (this.hasNextChar()) {
+                this.csvArrayBuilder.newItem();
+            }
+        },
+
+        /**
+         * @private
+         */
+        completeItemAndLine: function() {
+            this.csvArrayBuilder.completeItem();
+            this.csvArrayBuilder.completeLine();
+            if (this.hasNextChar()) {
+                this.csvArrayBuilder.newItem();
+                this.csvArrayBuilder.newLine();
+            }
+        },
 
         /**
          * @private
@@ -156,24 +177,41 @@ require('bugpack').context("*", function(bugpack) {
         /**
          * @private
          */
-        parseAfterQuote: function() {
+        parseAfterCarriageReturn: function() {
+            this.completeItemAndLine();
+            var nextChar = this.nextChar();
+            if (nextChar === "\"") {
+                this.parseQuotedItem();
+            } else if (nextChar === "\n") {
+                // Do nothing ... \r\n is considered a single line ending
+            } else if (nextChar === "\r") {
+                this.completeItemAndLine();
+                this.parseAfterCarriageReturn();
+            }else if (nextChar === ",") {
+                this.completeItem();
+            } else {
+                this.csvArrayBuilder.addToItem(nextChar);
+                this.parseNonQuotedItem();
+            }
+        },
+
+        /**
+         * @private
+         */
+        parseAfterPossibleClosingQuote: function() {
             var nextChar = this.nextChar();
             //escaped quote
             if (nextChar === "\"") {
                 this.csvArrayBuilder.addToItem(nextChar);
                 this.parseQuotedItem();
             } else if (nextChar === "\n") {
-                this.csvArrayBuilder.completeItem();
-                this.csvArrayBuilder.completeLine();
-                if (this.hasNextChar()) {
-                    this.csvArrayBuilder.newItem();
-                    this.csvArrayBuilder.newLine();
-                }
+                this.completeItemAndLine();
+            } else if (nextChar === "\r") {
+                this.parseAfterCarriageReturn();
             } else if (nextChar === ",") {
-                this.csvArrayBuilder.completeItem();
-                if (this.hasNextChar()) {
-                    this.csvArrayBuilder.newItem();
-                }
+                this.completeItem();
+            } else {
+                this.throwBadCsvFormat();
             }
         },
 
@@ -185,17 +223,11 @@ require('bugpack').context("*", function(bugpack) {
             if (nextChar === "\"") {
                 this.parseQuotedItem();
             } else if (nextChar === "\n") {
-                this.csvArrayBuilder.completeItem();
-                this.csvArrayBuilder.completeLine();
-                if (this.hasNextChar()) {
-                    this.csvArrayBuilder.newItem();
-                    this.csvArrayBuilder.newLine();
-                }
-            } else if (nextChar === ",") {
-                this.csvArrayBuilder.completeItem();
-                if (this.hasNextChar()) {
-                    this.csvArrayBuilder.newItem();
-                }
+                this.completeItemAndLine();
+            } else if (nextChar === "\r") {
+                this.parseAfterCarriageReturn();
+            }else if (nextChar === ",") {
+                this.completeItem();
             } else {
                 this.csvArrayBuilder.addToItem(nextChar);
                 this.parseNonQuotedItem();
@@ -209,26 +241,15 @@ require('bugpack').context("*", function(bugpack) {
             while (this.hasNextChar()) {
                 var nextChar = this.nextChar();
                 if (nextChar === "\n") {
-                    this.csvArrayBuilder.completeItem();
-                    this.csvArrayBuilder.completeLine();
-                    if (this.hasNextChar()) {
-                        this.csvArrayBuilder.newItem();
-                        this.csvArrayBuilder.newLine();
-                    }
+                    this.completeItemAndLine();
                     break;
-                } else if (nextChar === ",") {
-                    this.csvArrayBuilder.completeItem();
-                    if (this.hasNextChar()) {
-                        this.csvArrayBuilder.newItem();
-                    }
+                } else if (nextChar === "\r") {
+                    this.parseAfterCarriageReturn();
+                }else if (nextChar === ",") {
+                    this.completeItem();
                     break;
                 } else if (nextChar === "\"") {
-                    var toIndex = this.index;
-                    var fromIndex = 0;
-                    if (toIndex >= 100) {
-                        fromIndex = toIndex - 100;
-                    }
-                    throw new Exception("BadCsvFormat", {}, "Incorrectly formatted CSV file at '" + this.text.substring(fromIndex, toIndex + 1) + "'");
+                    this.throwBadCsvFormat();
                 } else {
                     this.csvArrayBuilder.addToItem(nextChar);
                 }
@@ -242,12 +263,24 @@ require('bugpack').context("*", function(bugpack) {
             while (this.hasNextChar()) {
                 var nextChar = this.nextChar();
                 if (nextChar === "\"") {
-                    this.parseAfterQuote();
+                    this.parseAfterPossibleClosingQuote();
                     break;
                 } else {
                     this.csvArrayBuilder.addToItem(nextChar);
                 }
             }
+        },
+
+        /**
+         * @private
+         */
+        throwBadCsvFormat: function() {
+            var toIndex = this.index;
+            var fromIndex = 0;
+            if (toIndex >= 100) {
+                fromIndex = toIndex - 100;
+            }
+            throw new Exception("BadCsvFormat", {}, "Incorrectly formatted CSV file at '" + this.text.substring(fromIndex, toIndex + 1) + "'");
         }
     });
 
