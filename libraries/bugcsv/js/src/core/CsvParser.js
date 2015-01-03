@@ -14,6 +14,7 @@
 //@Require('Class')
 //@Require('Exception')
 //@Require('Obj')
+//@Require('TypeUtil')
 
 
 //-------------------------------------------------------------------------------
@@ -29,6 +30,7 @@ require('bugpack').context("*", function(bugpack) {
     var Class       = bugpack.require('Class');
     var Exception   = bugpack.require('Exception');
     var Obj         = bugpack.require('Obj');
+    var TypeUtil    = bugpack.require('TypeUtil');
 
 
     //-------------------------------------------------------------------------------
@@ -50,10 +52,11 @@ require('bugpack').context("*", function(bugpack) {
 
         /**
          * @constructs
-         * @param {string} text
          * @param {CsvArrayBuilder} csvArrayBuilder
+         * @param {string} text
+         * @param {string} delimiter
          */
-        _constructor: function(text, csvArrayBuilder) {
+        _constructor: function(csvArrayBuilder, text, delimiter) {
 
             this._super();
 
@@ -67,6 +70,12 @@ require('bugpack').context("*", function(bugpack) {
              * @type {CsvArrayBuilder}
              */
             this.csvArrayBuilder    = csvArrayBuilder;
+
+            /**
+             * @private
+             * @type {string}
+             */
+            this.delimiter          = TypeUtil.isString(delimiter) ? delimiter : ",";
 
             /**
              * @private
@@ -187,7 +196,7 @@ require('bugpack').context("*", function(bugpack) {
             } else if (nextChar === "\r") {
                 this.completeItemAndLine();
                 this.parseAfterCarriageReturn();
-            }else if (nextChar === ",") {
+            } else if (nextChar === this.delimiter) {
                 this.completeItem();
             } else {
                 this.csvArrayBuilder.addToItem(nextChar);
@@ -208,7 +217,7 @@ require('bugpack').context("*", function(bugpack) {
                 this.completeItemAndLine();
             } else if (nextChar === "\r") {
                 this.parseAfterCarriageReturn();
-            } else if (nextChar === ",") {
+            } else if (nextChar === this.delimiter) {
                 this.completeItem();
             } else {
                 this.throwBadCsvFormat();
@@ -226,7 +235,7 @@ require('bugpack').context("*", function(bugpack) {
                 this.completeItemAndLine();
             } else if (nextChar === "\r") {
                 this.parseAfterCarriageReturn();
-            }else if (nextChar === ",") {
+            }else if (nextChar === this.delimiter) {
                 this.completeItem();
             } else {
                 this.csvArrayBuilder.addToItem(nextChar);
@@ -245,7 +254,7 @@ require('bugpack').context("*", function(bugpack) {
                     break;
                 } else if (nextChar === "\r") {
                     this.parseAfterCarriageReturn();
-                }else if (nextChar === ",") {
+                }else if (nextChar === this.delimiter) {
                     this.completeItem();
                     break;
                 } else if (nextChar === "\"") {

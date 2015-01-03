@@ -96,11 +96,12 @@ require('bugpack').context("*", function(bugpack) {
 
         /**
          * @param {string} text
+         * @param {string} delimiter
          * @return {Array.<Array.<string>>}
          */
-        parseSync: function(text) {
+        parseSync: function(text, delimiter) {
             var builder = new CsvArrayBuilder();
-            var parser  = new CsvParser(text, builder);
+            var parser  = new CsvParser(builder, text, delimiter);
             parser.parse();
             return builder.getCsvArray();
         },
